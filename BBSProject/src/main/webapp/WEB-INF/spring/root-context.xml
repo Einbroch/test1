@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<!-- 프록시 객체 생성을 자동으로 해주는 태그 -->
+	<!-- <aop:aspectj-autoproxy></aop:aspectj-autoproxy> -->
+
+	<!-- DB와 연결할 클래스 및 설정 값을 세팅하는 부분 -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<!-- JDBC 드라이버 클래스 -->
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<!-- DB와 연동할 url 주소 -->
+		<property name="url" value="jdbc:mysql://localhost:3306/testdb" />
+		<!-- DB에 접근할 ID -->
+		<property name="username" value="root" />
+		<!-- DB에 접근할 password -->
+		<property name="password" value="1234" />
+	</bean>
+	<!-- 트랜젝션 세팅 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 트랜젝션을 어노테이션으로 제어한다 -->
+	<!-- <tx:annotation-driven transaction-manager="transactionManager"/> -->
+
+	<!-- aop 설정 방식 -->
+	<!-- <tx:annotation-driven/> <aop:config> <aop:advisor advice-ref="transactionAdvice" 
+		pointcut="bean(*Service)"/> </aop:config> <tx:advice id="transactionAdvice" 
+		transaction-manager="transactionManager"> <tx:attributes> <tx:method name="*" 
+		propagation="REQUIRED"/> </tx:attributes> </tx:advice> -->
+
+	<!-- MyBatis의 SqlSessionFactoryBean을 이용한 sqlSessionFactory 선언부 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 기존의 jdbc의 설정을 가져오는 부분 해당 설정을 가져오기 위해서 jdbc의 bean id와 ref의 값은 일치되어야 
+			한다. -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- mybatis의 설정을 갖고있는 xml파일의 위치 를 설정하는 부분 -->
+		<property name="configLocation" value="classpath:/mybatis-config.xml" />
+		<!-- 참조할 객체의 주소를 생략할 목적으로 패키지의 주소를 선언하여 객체를 바로 참조하기 위한 설정 -->
+
+		<!-- xml mapper들을 설정하는 부분 해당 영역 안에는 반드시 쿼리들이 들어있어야 한다. -->
+		<property name="mapperLocations" value="classpath:mappers/**/*.xml" />
+	</bean>
+
+	<!-- 실제 세션을 설정하는 부분, 상위에 만들었던 sqlSessionFactory를 참조한다. -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+</beans>

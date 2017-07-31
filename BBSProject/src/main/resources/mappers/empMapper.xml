@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dj.bbs.model.LoginDAO">
+	<!-- <select id="existEmp" parameterType="com.dj.bbs.vo.EmpVO" resultType="int"> -->
+	<select id="existEmp" parameterType="EmpVO" resultType="int">
+		SELECT
+		COUNT(*) FROM EMP WHERE USERID = #{userid} AND PASSWORD = #{password}
+	</select>
+	<select id="checkID" parameterType="EmpVO">
+		SELECT COUNT(*) FROM EMP
+		WHERE USERID = #{userid}
+	</select>
+	<select id="selectUID" parameterType="String" resultType="SequenceVO">
+		SELECT
+		SID,
+		IDENTIFIER,
+		SEQUENCE1,
+		SEQUENCE2,
+		DESCRIPTION,
+		TABLE_NAME
+		FROM
+		SEQUENCE_TABLE
+		WHERE
+		TABLE_NAME=#{value}
+	</select>
+	<insert id="increaseSequence" parameterType="SequenceVO">
+		UPDATE
+		SEQUENCE_TABLE
+		SET
+		SEQUENCE1 = #{sequence1},
+		SEQUENCE2 = #{sequence2}
+		WHERE
+		TABLE_NAME=#{table_name}
+	</insert>
+	<insert id="insertEmp" parameterType="EmpVO">
+		INSERT INTO EMP
+		(
+		ID,
+		USERID,
+		PASSWORD,
+		NAME,
+		AGE,
+		GENDER,
+		ADDR,
+		CREATEDATE,
+		ALERT
+		)
+		VALUES(
+		#{id},
+		#{userid},
+		#{password},
+		#{name},
+		#{age},
+		#{gender},
+		#{addr},
+		#{createdate},
+		#{alert}
+		)
+	</insert>
+
+	<select id="selectEmpDetail" parameterType="String" resultType="EmpVO">
+	select
+		ID,
+		USERID,
+		PASSWORD,
+		NAME,
+		AGE,
+		GENDER,
+		ADDR,
+		CREATEDATE,
+		ALERT
+	from
+		emp
+	where
+		id= #{value}
+	</select>
+
+</mapper>

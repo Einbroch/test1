@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dj.bbs.model.BbsDAO">
+	<select id="totalBBSList" parameterType="int"
+	resultType="BbsVO">
+		SELECT
+			ID,
+			NUM,
+			TITLE,
+			OWNERID,
+			OWNERNAME,
+			REGISTDATE,
+			CONTENT,
+			ISFILE,
+			ISDELETE
+		FROM 
+			BBS 
+		ORDER BY ID DESC 
+		LIMIT ${value}, 100;  
+	</select>
+	<insert id="insertBBSInfo" parameterType="BbsVO">
+		INSERT INTO BBS(
+			ID,
+			NUM,
+			TITLE,
+			OWNERID,
+			OWNERNAME,
+			REGISTDATE,
+			CONTENT,
+			CONTENTPATH
+		) VALUES (
+			#{id},
+			#{num},
+			#{title},
+			#{ownerId},
+			#{ownerName},
+			#{registDate},
+			#{content},
+			#{contentPath}		
+		)
+	</insert>
+	<select id="selectBBSDetail" parameterType="BbsVO"
+	resultType="BbsVO">
+		SELECT
+			ID,
+			NUM,
+			TITLE,
+			OWNERID,
+			OWNERNAME,
+			REGISTDATE,
+			CONTENT,
+			ISFILE,
+			ISDELETE,
+			CONTENTPATH
+		FROM 
+			BBS
+		WHERE
+			ID = #{id}
+	</select>
+</mapper>
